@@ -34,9 +34,9 @@ function Header() {
     }
 
     if (dropdownOpen) {
-      document.addEventListener('mousedown', handleClickOutside)
+      document.addEventListener('click', handleClickOutside)
       return () => {
-        document.removeEventListener('mousedown', handleClickOutside)
+        document.removeEventListener('click', handleClickOutside)
       }
     }
   }, [dropdownOpen])
@@ -96,7 +96,10 @@ function Header() {
               <li className="relative" ref={dropdownRef}>
                 <button
                   key={userData?.name}
-                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setDropdownOpen(!dropdownOpen)
+                  }}
                   className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold hover:bg-blue-700 transition-colors"
                 >
                   {userData.name?.charAt(0).toUpperCase() || 'U'}
@@ -135,7 +138,10 @@ function Header() {
             {authStatus && userData && (
               <div className="relative" ref={dropdownRef}>
                 <button
-                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setDropdownOpen(!dropdownOpen)
+                  }}
                   className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold hover:bg-blue-700 transition-colors"
                 >
                   {userData.name?.charAt(0).toUpperCase() || 'U'}

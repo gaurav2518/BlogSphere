@@ -35,14 +35,12 @@ const postValidation = [
     .withMessage('Status must be active, inactive, or draft')
 ];
 
-// Public routes
-router.get('/', getPosts);
-router.get('/:slug', getPost);
-
 // Protected routes (require authentication)
+router.get('/', authenticate, getPosts);
+router.get('/user/me', authenticate, getUserPosts);
+router.get('/:slug', authenticate, getPost);
 router.post('/', authenticate, uploadSingle, postValidation, createPost);
 router.put('/:id', authenticate, uploadSingle, postValidation, updatePost);
 router.delete('/:id', authenticate, deletePost);
-router.get('/user/me', authenticate, getUserPosts);
 
 export default router;

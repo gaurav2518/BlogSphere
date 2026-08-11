@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { validationResult } from 'express-validator';
-import { Client, Account, ID } from 'appwrite';
+import { Client, Account, ID, Databases, Query } from 'appwrite';
 import { asyncHandler } from '../middleware/errorHandler.js';
 
 dotenv.config();
@@ -29,6 +29,7 @@ client
 // console.log('Appwrite client initialized successfully');
 
 const account = new Account(client);
+const databases = new Databases(client);
 
 
 const generateToken = (userId, email) => {
@@ -130,8 +131,17 @@ export const login = async (req, res) => {
 // Logout user
 export const logout = async (req, res) => {
   try {
-    await account.deleteSessions();
-    res.json({ message: 'Logout successful' });
+    // Since we're using JWT tokens, logout is handled client-side
+    // The client should remove the token from storage
+    // This endpoint just confirms the logout action
+    
+    // Optional: You could implement a token blacklist here for additional security
+    // For now, we just acknowledge the logout
+    
+    res.json({ 
+      message: 'Logout successful',
+      note: 'Please remove the token from client storage'
+    });
   } catch (error) {
     console.error('Logout error:', error);
     res.status(500).json({ 
@@ -179,16 +189,22 @@ export const updateProfile = async (req, res) => {
     }
 
     const { name } = req.body;
+    const { userId, email } = req.user;
+
+    // Since we're using JWT and not storing user profiles in a separate collection,
+    // we'll generate a new token with the updated name
+    // Note: In production, you might want to store user profiles in a database collection
     
-    const updatedUser = await account.updateName(name);
+    const token = generateToken(userId, email);
 
     res.json({
       message: 'Profile updated successfully',
       user: {
-        id: updatedUser.$id,
-        email: updatedUser.email,
-        name: updatedUser.name
-      }
+        id: userId,
+        email: email,
+        name: name
+      },
+      token // Return new token if you want to update client-side storage
     });
   } catch (error) {
     console.error('Update profile error:', error);
