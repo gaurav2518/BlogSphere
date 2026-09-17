@@ -56,8 +56,13 @@ app.get('/health', (req, res) => {
 app.use(notFound);
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-    console.log(`Environment: ${process.env.NODE_ENV}`);
-    console.log(`Frontend URL: ${process.env.FRONTEND_URL}`);
-})
+// Only listen directly when not running in serverless environment (e.g. Vercel)
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+    app.listen(PORT, () => {
+        console.log(`Server is running on http://localhost:${PORT}`);
+        console.log(`Environment: ${process.env.NODE_ENV}`);
+        console.log(`Frontend URL: ${process.env.FRONTEND_URL}`);
+    });
+}
+
+export default app;
